@@ -16,12 +16,13 @@ var get = require('get-value');
  *
  * @param  {Array} `arr` The Array to sort.
  * @param  {String|Array|Function} `props` One or more object paths or comparison functions.
- * @param  {Object} `opts` Pass `{ reverse: true }` to reverse the sort order.
+ * @param  {Object} `opts` Pass `{ direction: 'asc' }` to set the sort direction.
  * @return {Array} Returns a sorted array.
  * @api public
  */
 
-function arraySort(arr, props, opts) {
+function arraySort(arr, props) {
+  var opts = {};
   if (arr == null) {
     return [];
   }
@@ -38,7 +39,7 @@ function arraySort(arr, props, opts) {
 
   // if the last argument appears to be a plain object,
   // it's not a valid `compare` arg, so it must be options.
-  if (typeOf(args[args.length - 1]) === 'object') {
+  if (typeOf(args[args.length - 1]) === 'object' && !args[args.length - 1].hasOwnProperty('field')) {
     opts = args.pop();
   }
   return arr.sort(sortBy(args, opts));
@@ -49,7 +50,7 @@ function arraySort(arr, props, opts) {
  * is returned.
  *
  * @param  {String|Array|Function} `props` One or more object paths or comparison functions.
- * @param  {Object} `opts` Pass `{ reverse: true }` to reverse the sort order.
+ * @param  {Object} `opts` Pass `{ direction: 'asc' }` to set the sort direction.
  * @return {Array}
  */
 
@@ -71,7 +72,7 @@ function sortBy(props, opts) {
         break;
       }
     }
-    if (opts.reverse === true) {
+    if (opts.direction === 'desc') {
       return result * -1;
     }
     return result;
@@ -87,6 +88,9 @@ function compare(prop, a, b, map = {}) {
   if (typeof prop === 'function') {
     // expose `compare` to custom function
     return prop(a, b, compare.bind(null, null));
+  }
+  if (prop && typeof prop === 'object') {
+    return (prop.direction === 'desc' ? -1 : 1) * compare(prop.field, a, b, map);
   }
   if (map.hasOwnProperty(a) || map.hasOwnProperty(b)) {
     return defaultCompare(map[a], map[b]);

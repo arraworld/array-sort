@@ -339,7 +339,7 @@ describe('arraySort', function() {
     ]);
   });
 
-  it('should support reverse sorting with any combination of functions and properties:', function() {
+  it('should support setting the sort direction with any combination of functions and properties:', function() {
     var posts = [
       { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
       { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
@@ -366,7 +366,7 @@ describe('arraySort', function() {
 
     var actual = arraySort(posts, 'locals.date', 'doesnt.exist', compare('locals.foo'), [
       compare('locals.bar')
-    ], { reverse: true });
+    ], { direction: 'desc' });
 
     actual.should.eql([
       { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
@@ -382,6 +382,72 @@ describe('arraySort', function() {
       { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
       { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
       { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } }
+    ]);
+  });
+
+  it('should support setting the sort direction for certain fields', function() {
+    var posts = [
+      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
+      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
+      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
+      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
+      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
+      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
+      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
+      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
+      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
+      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
+      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
+      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
+      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
+    ];
+
+    arraySort(posts, { field: 'locals.bar' }).should.eql([
+      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
+      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
+      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
+      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
+      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
+      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
+      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
+      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
+      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
+      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
+      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
+      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
+      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
+    ]);
+
+    arraySort(posts, { field: 'locals.bar', direction: 'desc' }).should.eql([
+      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
+      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
+      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
+      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
+      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
+      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
+      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
+      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
+      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
+      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
+      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
+      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
+      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
+    ]);
+
+    arraySort(posts, { field: 'locals.bar' }, { field: 'path', direction: 'desc' }).should.eql([
+      { path: 'k.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 1 } },
+      { path: 'a.md', locals: { date: '2014-01-01', foo: 'zzz', bar: 1 } },
+      { path: 'f.md', locals: { date: '2014-01-01', foo: 'mmm', bar: 2 } },
+      { path: 'd.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 3 } },
+      { path: 'j.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 4 } },
+      { path: 'i.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 5 } },
+      { path: 'h.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 6 } },
+      { path: 'l.md', locals: { date: '2014-01-01', foo: 'xxx', bar: 7 } },
+      { path: 'e.md', locals: { date: '2015-01-02', foo: 'aaa', bar: 8 } },
+      { path: 'b.md', locals: { date: '2012-01-02', foo: 'ccc', bar: 9 } },
+      { path: 'f.md', locals: { date: '2014-06-01', foo: 'rrr', bar: 10 } },
+      { path: 'c.md', locals: { date: '2015-04-12', foo: 'ttt', bar: 11 } },
+      { path: 'g.md', locals: { date: '2014-02-02', foo: 'yyy', bar: 12 } },
     ]);
   });
 });
