@@ -56,12 +56,17 @@ function arraySort(arr, props, opts) {
 function sortBy(props, opts) {
   opts = opts || {};
 
+  var order = {};
+  if (opts.order) {
+    opts.order.forEach((d, i) => { order[d] = i; });
+  }
+
   return function compareFn(a, b) {
     var len = props.length, i = -1;
     var result;
 
     while (++i < len) {
-      result = compare(props[i], a, b);
+      result = compare(props[i], a, b, order);
       if (result !== 0) {
         break;
       }
@@ -78,14 +83,17 @@ function sortBy(props, opts) {
  * `a[prop]` is compared to `b[prop]`
  */
 
-function compare(prop, a, b) {
+function compare(prop, a, b, map = {}) {
   if (typeof prop === 'function') {
     // expose `compare` to custom function
     return prop(a, b, compare.bind(null, null));
   }
+  if (map.hasOwnProperty(a) || map.hasOwnProperty(b)) {
+    return defaultCompare(map[a], map[b]);
+  }
   // compare object values
   if (prop && typeof a === 'object' && typeof b === 'object') {
-    return compare(null, get(a, prop), get(b, prop));
+    return compare(null, get(a, prop), get(b, prop), map);
   }
   return defaultCompare(a, b);
 }
