@@ -23,7 +23,8 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "browserify index.js --standalone arraySort > dist/arraySort.js"
   },
   "dependencies": {
     "default-compare": "^1.0.0",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "ansi-bold": "^0.1.1",
     "benchmarked": "^0.1.5",
+    "browserify": "^16.2.3",
     "glob": "^7.0.3",
     "gulp-format-md": "^0.1.8",
     "lodash.sortbyorder": "^3.4.4",
